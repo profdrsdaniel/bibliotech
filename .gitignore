@@ -1,0 +1,24 @@
+# Maven
+target/
+pom.xml.versionsBackup
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / VS Code
+.classpath
+.project
+.settings/
+.vscode/
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+# macOS
+.DS_Store
