@@ -22,3 +22,6 @@ replay_pid*
 
 # macOS
 .DS_Store
+
+# Ferramenta de validacao do professor - nao versionar
+src/main/java/br/ulbra/bibliotech/DemonstracaoValidacao.java
