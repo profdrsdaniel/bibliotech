@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BiblioTech - Emprestar</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/}">Livros</a>
+        <a th:href="@{/emprestimos}">Emprestimos</a>
+    </nav>
+</header>
+
+<main>
+    <h1>Novo emprestimo</h1>
+
+    <div class="destaque-livro">
+        <strong>Livro selecionado:</strong>
+        <span th:text="${livro.titulo}"></span>
+        <span th:text="'(' + ${livro.autor} + ')'"></span>
+        <span th:text="'- id ' + ${livro.id}"></span>
+    </div>
+
+    <form th:action="@{/emprestar}" method="post">
+        <input type="hidden" name="livroId" th:value="${livro.id}">
+
+        <p>
+            <label for="select-socio">Socio</label>
+            <select id="select-socio" name="socioId">
+                <option th:each="socio : ${socios}"
+                        th:value="${socio.id}"
+                        th:text="${socio.nome} + ' (id ' + ${socio.id} + ')'"></option>
+            </select>
+        </p>
+
+        <p>
+            <button id="btn-confirmar-emprestimo" type="submit">Confirmar emprestimo</button>
+        </p>
+    </form>
+
+    <a class="voltar" th:href="@{/}">Voltar para livros</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BiblioTech - Emprestimos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/}">Livros</a>
+        <a th:href="@{/emprestimos}">Emprestimos</a>
+    </nav>
+</header>
+
+<main>
+    <h1>Emprestimos</h1>
+
+    <div id="mensagem-sucesso"
+         th:classappend="${mensagemSucesso != null} ? ' mensagem-sucesso' : ''"
+         th:text="${mensagemSucesso}"></div>
+    <div id="mensagem-erro"
+         th:classappend="${mensagemErro != null} ? ' mensagem-erro' : ''"
+         th:text="${mensagemErro}"></div>
+
+    <div id="carregando">Carregando...</div>
+
+    <table id="tabela-emprestimos" style="display:none">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Socio</th>
+            <th>Livro</th>
+            <th>Data do emprestimo</th>
+            <th>Data prevista</th>
+            <th>Data de devolucao</th>
+            <th>Multa</th>
+            <th>Acao</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="emprestimo : ${emprestimos}" th:attr="data-id=${emprestimo.id}">
+            <td th:text="${emprestimo.id}"></td>
+            <td th:text="${emprestimo.socio.nome}"></td>
+            <td th:text="${emprestimo.livro.titulo}"></td>
+            <td th:text="${emprestimo.dataEmprestimo}"></td>
+            <td th:text="${emprestimo.dataPrevistaDevolucao}"></td>
+            <td th:text="${emprestimo.dataDevolucao}"></td>
+            <td th:text="${emprestimo.multaCobrada}"></td>
+            <td>
+                <a th:if="${emprestimo.estaAtivo()}"
+                   th:href="@{/devolver(emprestimoId=${emprestimo.id})}"
+                   class="botao">Devolver</a>
+                <span th:unless="${emprestimo.estaAtivo()}">Devolvido</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<script th:inline="none">
+    window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            document.getElementById('carregando').style.display = 'none';
+            document.getElementById('tabela-emprestimos').style.display = 'table';
+        }, 2000);
+    });
+</script>
+</body>
+</html>

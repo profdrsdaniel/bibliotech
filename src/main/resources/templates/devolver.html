@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BiblioTech - Devolver</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/}">Livros</a>
+        <a th:href="@{/emprestimos}">Emprestimos</a>
+    </nav>
+</header>
+
+<main>
+    <h1>Registrar devolucao</h1>
+
+    <div class="destaque-livro">
+        <strong>Emprestimo:</strong>
+        <span th:text="'id ' + ${emprestimo.id}"></span>
+        <span th:text="'- ' + ${emprestimo.livro.titulo}"></span>
+        <span th:text="'- ' + ${emprestimo.socio.nome}"></span>
+    </div>
+
+    <form th:action="@{/devolver}" method="post">
+        <input type="hidden" name="emprestimoId" th:value="${emprestimo.id}">
+
+        <p>
+            <label for="input-data-devolucao">Data da devolucao</label>
+            <input type="date" id="input-data-devolucao" name="dataDevolucao">
+        </p>
+
+        <p>
+            <button id="btn-confirmar-devolucao" type="submit">Confirmar devolucao</button>
+        </p>
+    </form>
+
+    <a class="voltar" th:href="@{/emprestimos}">Voltar para emprestimos</a>
+</main>
+</body>
+</html>

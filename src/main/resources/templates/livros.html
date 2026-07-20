@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BiblioTech - Livros</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/}">Livros</a>
+        <a th:href="@{/emprestimos}">Emprestimos</a>
+    </nav>
+</header>
+
+<main>
+    <h1>Livros</h1>
+
+    <div id="mensagem-sucesso"
+         th:classappend="${mensagemSucesso != null} ? ' mensagem-sucesso' : ''"
+         th:text="${mensagemSucesso}"></div>
+    <div id="mensagem-erro"
+         th:classappend="${mensagemErro != null} ? ' mensagem-erro' : ''"
+         th:text="${mensagemErro}"></div>
+
+    <table id="tabela-livros">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Titulo</th>
+            <th>Autor</th>
+            <th>Disponibilidade</th>
+            <th>Acao</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="livro : ${livros}" th:attr="data-id=${livro.id}">
+            <td th:text="${livro.id}"></td>
+            <td th:text="${livro.titulo}"></td>
+            <td th:text="${livro.autor}"></td>
+            <td>
+                <span th:if="${livro.disponivel}">Disponivel</span>
+                <span th:unless="${livro.disponivel}" class="indisponivel">Emprestado</span>
+            </td>
+            <td>
+                <a th:if="${livro.disponivel}"
+                   th:href="@{/emprestar(livroId=${livro.id})}"
+                   class="botao">Emprestar</a>
+                <span th:unless="${livro.disponivel}" class="indisponivel">Emprestado</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

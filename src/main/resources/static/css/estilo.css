@@ -1,0 +1,127 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    color: #222;
+    background: #f4f4f4;
+}
+
+header {
+    background: #2c3e50;
+    padding: 12px 24px;
+}
+
+header nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 24px;
+}
+
+h1 {
+    font-size: 22px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    margin-top: 12px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+th {
+    background: #eaeef1;
+}
+
+button, .botao {
+    background: #2980b9;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button:hover, .botao:hover {
+    background: #2471a3;
+}
+
+.indisponivel {
+    color: #888;
+    font-style: italic;
+}
+
+.mensagem-sucesso {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px 14px;
+    border: 1px solid #c3e6cb;
+    border-radius: 3px;
+    margin: 12px 0;
+}
+
+.mensagem-erro {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 10px 14px;
+    border: 1px solid #f5c6cb;
+    border-radius: 3px;
+    margin: 12px 0;
+}
+
+.destaque-livro {
+    background: #fff;
+    border: 2px solid #2980b9;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+form p {
+    margin: 12px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+select, input[type="date"] {
+    padding: 6px 8px;
+    font-size: 14px;
+    min-width: 240px;
+}
+
+#carregando {
+    padding: 16px;
+    font-size: 18px;
+    color: #555;
+}
+
+.voltar {
+    display: inline-block;
+    margin-top: 16px;
+}

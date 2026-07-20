@@ -214,6 +214,14 @@ Os endpoints, os exemplos de requisição e resposta, a tabela de códigos de st
 
 ---
 
+## Interface web
+
+O BiblioTech também tem uma interface web (páginas de livros, empréstimos e formulários de ação), usada na aula de automação de testes com Selenium. Sobe junto com `mvn spring-boot:run` e fica acessível em `http://localhost:8080`.
+
+A descrição de cada tela, a tabela de identificadores estáveis para automação e o comportamento esperado de cada fluxo estão documentados em **[INTERFACE.md](INTERFACE.md)**.
+
+---
+
 ## Problemas comuns
 
 | Problema | Causa provável | Solução |
