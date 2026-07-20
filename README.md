@@ -91,7 +91,7 @@ Depois que esse download terminar, tudo fica guardado numa pasta local no seu co
 
 Abra `src/main/java/br/ulbra/bibliotech/Main.java` e clique no ▶️ verde ao lado da declaração `public class Main` (ou do método `main`). Escolha "Run 'Main.main()'".
 
-O console vai imprimir seis cenários. Em cada linha, o sistema mostra **o valor que ele produziu** e, ao lado, **o valor que a regra de negócio determina**. Leia essa saída com calma — ela já é uma boa pista de por onde começar.
+O console vai imprimir alguns cenários de uso do sistema — empréstimo, devolução, tentativa de retirada recusada — mostrando o que cada operação produz. É uma forma rápida de ver o sistema em funcionamento antes de começar a testá-lo.
 
 ### 5. Rodar os testes
 
@@ -172,12 +172,12 @@ Ou seja: com 3 dias de atraso cobra-se por 3 dias (R$ 3,00), e não por 1 dia.
 | 0 | R$ 0,00 | devolveu na data prevista |
 | 1 | R$ 0,00 | dentro da carência |
 | 2 | R$ 0,00 | dentro da carência (último dia dela) |
-| 3 | **R$ 3,00** | passou da carência: cobra os 3 dias |
+| 3 | R$ 3,00 | passou da carência: cobra os 3 dias |
 | 4 | R$ 4,00 | 4 × R$ 1,00 |
 | 10 | R$ 10,00 | 10 × R$ 1,00 |
 | 49 | R$ 49,00 | 49 × R$ 1,00 |
 | 50 | R$ 50,00 | 50 × R$ 1,00, exatamente no teto |
-| 51 | **R$ 50,00** | passou do teto, trava em R$ 50,00 |
+| 51 | R$ 50,00 | passou do teto, trava em R$ 50,00 |
 | 200 | R$ 50,00 | o teto vale sempre |
 
 ### REQ-004 detalhada: quando o sócio fica bloqueado
@@ -188,7 +188,7 @@ O bloqueio acontece quando a multa acumulada é **estritamente maior** que R$ 20
 |---|---|
 | R$ 0,00 | liberado |
 | R$ 19,99 | liberado |
-| **R$ 20,00** | **liberado** (o limite é *acima de* R$ 20,00) |
+| R$ 20,00 | liberado (o limite é *acima de* R$ 20,00) |
 | R$ 20,01 | bloqueado |
 | R$ 35,00 | bloqueado |
 
@@ -201,7 +201,7 @@ O sócio pode ter **até 3** empréstimos ativos. Ao chegar em 3, ele **não pod
 | 0 | sim |
 | 1 | sim |
 | 2 | sim |
-| **3** | **não** — já está no limite |
+| 3 | não — já está no limite |
 | 4 | não |
 
 ---

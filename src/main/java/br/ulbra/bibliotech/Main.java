@@ -15,9 +15,9 @@ import java.util.Locale;
 /**
  * Demonstracao executavel do BiblioTech.
  *
- * <p>Percorre seis cenarios de uso e imprime, lado a lado, o valor que o sistema
- * produziu e o valor que a especificacao determina. As datas sao fixas para que
- * a saida seja sempre a mesma, independentemente de quando o programa rodar.</p>
+ * <p>Percorre alguns cenarios de uso do sistema e imprime no console o que cada
+ * operacao produz. As datas sao fixas para que a saida seja sempre a mesma,
+ * independentemente de quando o programa rodar.</p>
  */
 public class Main {
 
@@ -37,7 +37,6 @@ public class Main {
         cenario3(servico);
         cenario4(servico);
         cenario5(servico);
-        cenario6(servico);
 
         rodape();
     }
@@ -53,12 +52,7 @@ public class Main {
         System.out.println("  Socio.................: " + socio.getNome());
         System.out.println("  Livro.................: " + livro.getTitulo() + " (" + livro.getAutor() + ")");
         System.out.println("  Data do emprestimo....: " + emprestimo.getDataEmprestimo().format(DATA));
-        comparar("Data prevista devolucao",
-                emprestimo.getDataPrevistaDevolucao().format(DATA),
-                DATA_BASE.plusDays(14).format(DATA));
-        comparar("Emprestimos ativos",
-                String.valueOf(socio.getEmprestimosAtivos()),
-                "1");
+        System.out.println("  Data prevista devolucao: " + emprestimo.getDataPrevistaDevolucao().format(DATA));
     }
 
     private static void cenario2(EmprestimoService servico) {
@@ -68,98 +62,67 @@ public class Main {
         Livro livro = new Livro(2L, "Grande Sertao: Veredas", "Guimaraes Rosa", "978-85-01-05555-4");
 
         Emprestimo emprestimo = servico.emprestar(socio, livro, DATA_BASE);
-        LocalDate devolucao = emprestimo.getDataPrevistaDevolucao().minusDays(2);
+        LocalDate devolucao = emprestimo.getDataPrevistaDevolucao().minusDays(1);
         double multa = servico.devolver(emprestimo, devolucao);
 
         System.out.println("  Data prevista.........: " + emprestimo.getDataPrevistaDevolucao().format(DATA));
-        System.out.println("  Data da devolucao.....: " + devolucao.format(DATA) + "  (2 dias adiantado)");
-        comparar("Multa", moeda(multa), moeda(0.00));
-        comparar("Livro disponivel novamente", String.valueOf(livro.isDisponivel()), "true");
+        System.out.println("  Data da devolucao.....: " + devolucao.format(DATA));
+        System.out.println("  Multa calculada.......: " + moeda(multa));
     }
 
     private static void cenario3(EmprestimoService servico) {
-        titulo(3, "Devolucao com 3 dias de atraso");
+        titulo(3, "Devolucao com 10 dias de atraso");
 
         Socio socio = new Socio(3L, "Carla Nunes", "carla.nunes@ulbra.br");
         Livro livro = new Livro(3L, "Vidas Secas", "Graciliano Ramos", "978-85-03-01204-8");
 
         Emprestimo emprestimo = servico.emprestar(socio, livro, DATA_BASE);
-        LocalDate devolucao = emprestimo.getDataPrevistaDevolucao().plusDays(3);
+        LocalDate devolucao = emprestimo.getDataPrevistaDevolucao().plusDays(10);
         double multa = servico.devolver(emprestimo, devolucao);
 
         System.out.println("  Data prevista.........: " + emprestimo.getDataPrevistaDevolucao().format(DATA));
-        System.out.println("  Data da devolucao.....: " + devolucao.format(DATA) + "  (3 dias de atraso)");
-        comparar("Multa", moeda(multa), moeda(3.00));
-        comparar("Multa acumulada do socio", moeda(socio.getMultaAcumulada()), moeda(3.00));
+        System.out.println("  Data da devolucao.....: " + devolucao.format(DATA));
+        System.out.println("  Multa calculada.......: " + moeda(multa));
     }
 
     private static void cenario4(EmprestimoService servico) {
-        titulo(4, "Devolucao com 51 dias de atraso");
+        titulo(4, "Socio com multa acumulada tentando novo emprestimo");
 
-        Socio socio = new Socio(4L, "Diego Alves", "diego.alves@ulbra.br");
+        Socio socio = new Socio(4L, "Diego Alves", "diego.alves@ulbra.br", 35.00, 0);
         Livro livro = new Livro(4L, "Macunaima", "Mario de Andrade", "978-85-260-1234-7");
 
-        Emprestimo emprestimo = servico.emprestar(socio, livro, DATA_BASE);
-        LocalDate devolucao = emprestimo.getDataPrevistaDevolucao().plusDays(51);
-        double multa = servico.devolver(emprestimo, devolucao);
+        System.out.println("  Socio.................: " + socio.getNome());
+        System.out.println("  Multa acumulada.......: " + moeda(socio.getMultaAcumulada()));
 
-        System.out.println("  Data prevista.........: " + emprestimo.getDataPrevistaDevolucao().format(DATA));
-        System.out.println("  Data da devolucao.....: " + devolucao.format(DATA) + "  (51 dias de atraso)");
-        comparar("Multa", moeda(multa), moeda(50.00) + " (teto)");
+        String impedimento = servico.verificarImpedimento(socio, livro);
+        if (impedimento == null) {
+            servico.emprestar(socio, livro, DATA_BASE);
+            System.out.println("  Resultado.............: emprestimo realizado");
+        } else {
+            System.out.println("  Resultado.............: emprestimo recusado");
+            System.out.println("  Motivo................: " + impedimento);
+        }
     }
 
     private static void cenario5(EmprestimoService servico) {
-        titulo(5, "Socio com multa de exatamente R$ 20,00");
+        titulo(5, "Tentativa de emprestar exemplar ja emprestado");
 
-        Socio socio = new Socio(5L, "Elisa Rocha", "elisa.rocha@ulbra.br", 20.00, 0);
+        Socio primeiro = new Socio(5L, "Elisa Rocha", "elisa.rocha@ulbra.br");
+        Socio segundo = new Socio(6L, "Felipe Souza", "felipe.souza@ulbra.br");
         Livro livro = new Livro(5L, "A Hora da Estrela", "Clarice Lispector", "978-85-209-1234-0");
 
-        System.out.println("  Multa acumulada.......: " + moeda(socio.getMultaAcumulada()));
-        System.out.println("  Limite de bloqueio....: acima de " + moeda(20.00));
+        servico.emprestar(primeiro, livro, DATA_BASE);
+        System.out.println("  Exemplar..............: " + livro.getTitulo());
+        System.out.println("  Primeiro emprestimo...: " + primeiro.getNome());
 
-        String impedimento = servico.verificarImpedimento(socio, livro);
-        String situacao = (impedimento == null) ? "LIBERADO" : "BLOQUEADO";
-
-        comparar("Situacao", situacao, "LIBERADO");
-        if (impedimento != null) {
-            System.out.println("  Motivo informado......: " + impedimento);
+        String impedimento = servico.verificarImpedimento(segundo, livro);
+        if (impedimento == null) {
+            servico.emprestar(segundo, livro, DATA_BASE);
+            System.out.println("  Segundo emprestimo....: realizado para " + segundo.getNome());
+        } else {
+            System.out.println("  Segundo emprestimo....: recusado para " + segundo.getNome());
+            System.out.println("  Motivo................: " + impedimento);
         }
-    }
-
-    private static void cenario6(EmprestimoService servico) {
-        titulo(6, "Socio com 3 emprestimos ativos tentando o quarto");
-
-        Socio socio = new Socio(6L, "Felipe Souza", "felipe.souza@ulbra.br", 0.00, 3);
-        Livro livro = new Livro(6L, "O Cortico", "Aluisio Azevedo", "978-85-08-11111-2");
-
-        System.out.println("  Emprestimos ativos....: " + socio.getEmprestimosAtivos());
-        System.out.println("  Limite da politica....: 3");
-
-        String impedimento = servico.verificarImpedimento(socio, livro);
-        String situacao = (impedimento == null) ? "PERMITIDO" : "RECUSADO";
-
-        comparar("Quarto emprestimo", situacao, "RECUSADO");
-        if (impedimento != null) {
-            System.out.println("  Motivo informado......: " + impedimento);
-        }
-    }
-
-    private static void comparar(String rotulo, String produzido, String esperado) {
-        String base = "  " + rotulo;
-        while (base.length() < 26) {
-            base += ".";
-        }
-        String marca = produzido.equals(esperado) ? " " : "!";
-        System.out.println(base + ": " + pad(produzido, 14)
-                + "| regra manda: " + esperado + "  " + marca);
-    }
-
-    private static String pad(String valor, int largura) {
-        StringBuilder sb = new StringBuilder(valor);
-        while (sb.length() < largura) {
-            sb.append(' ');
-        }
-        return sb.toString();
     }
 
     private static String moeda(double valor) {
@@ -178,8 +141,8 @@ public class Main {
         System.out.println("BIBLIOTECH - Demonstracao do sistema");
         System.out.println("Controle de Qualidade e Teste de Software");
         System.out.println("=".repeat(78));
-        System.out.println("Cada linha mostra o valor produzido pelo sistema e, ao lado, o valor");
-        System.out.println("que a especificacao determina. Compare os dois com atencao.");
+        System.out.println("Cada cenario abaixo executa uma operacao do sistema e mostra o que ela");
+        System.out.println("produz no console.");
     }
 
     private static void rodape() {
