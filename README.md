@@ -206,6 +206,14 @@ O sócio pode ter **até 3** empréstimos ativos. Ao chegar em 3, ele **não pod
 
 ---
 
+## API REST
+
+Além de rodar como demonstração no console, o BiblioTech expõe uma API REST usada na aula de testes de API com Postman. Ela sobe com `mvn spring-boot:run` e responde em `http://localhost:8080`.
+
+Os endpoints, os exemplos de requisição e resposta, a tabela de códigos de status esperados e o passo a passo com o Postman estão documentados em **[API.md](API.md)**.
+
+---
+
 ## Problemas comuns
 
 | Problema | Causa provável | Solução |
