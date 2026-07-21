@@ -23,5 +23,8 @@ replay_pid*
 # macOS
 .DS_Store
 
+# Configuracao local do Claude Code
+.claude/settings.local.json
+
 # Ferramenta de validacao do professor - nao versionar
 src/main/java/br/ulbra/bibliotech/DemonstracaoValidacao.java

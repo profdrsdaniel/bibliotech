@@ -19,7 +19,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <junit.version>6.1.2</junit.version>
-        <mockito.version>5.16.0</mockito.version>
+        <mockito.version>5.23.0</mockito.version>
         <surefire.version>3.5.2</surefire.version>
         <jacoco.version>0.8.14</jacoco.version>
     </properties>
