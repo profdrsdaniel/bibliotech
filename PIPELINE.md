@@ -1,25 +1,25 @@
 # PIPELINE.md — Solução do laboratório de integração contínua
 
-> ## ⚠️ Este documento é a resolução do laboratório
->
-> Ele explica o workflow de integração contínua do projeto e por que a pipeline dele **fica vermelha de propósito**. Se você ainda não tentou o laboratório, **pare e tente antes**.
+## 1. Aviso
+
+> Este documento é a **resolução** do laboratório de integração contínua. Ele explica o workflow do projeto e por que a pipeline dele **fica vermelha de propósito**. Se você ainda não tentou o laboratório, **pare e tente antes**.
 
 ---
 
-## 1. O que é integração contínua e que problema ela resolve
+## 2. O que é integração contínua e que problema ela resolve
 
 Integração contínua (CI) é a prática de rodar a suíte de testes **automaticamente, a cada alteração enviada** ao repositório, numa máquina limpa e neutra — não na sua.
 
 O ganho não é a automação em si (você já podia rodar `mvn test` na sua máquina). O ganho é **o momento em que o defeito aparece**:
 
 - **Sem CI:** alguém envia uma alteração que quebra um teste. Ninguém roda a suíte completa naquele dia. Dias depois, outra pessoa percebe que algo está errado. Agora existem dezenas de commits desde a quebra, e descobrir **qual** deles causou o problema vira uma caça demorada.
-- **Com CI:** a mesma alteração é enviada, a pipeline roda em minutos e falha. O e-mail chega com o nome de quem enviou, o commit exato e o teste que quebrou. O defeito é pego **na hora**, preso à alteração que o causou.
+- **Com CI:** a mesma alteração é enviada, a pipeline roda em minutos e falha. O aviso chega com o nome de quem enviou, o commit exato e o teste que quebrou. O defeito é pego **na hora**, preso à alteração que o causou.
 
 CI encurta a distância entre "o defeito entrou" e "o defeito foi notado" de dias para minutos. É isso que ela compra.
 
 ---
 
-## 2. O workflow, linha a linha
+## 3. O workflow, linha a linha
 
 O arquivo fica em `.github/workflows/testes.yml`. O GitHub lê qualquer arquivo `.yml` dentro de `.github/workflows/` e o trata como uma pipeline.
 
@@ -66,16 +66,16 @@ Chave por chave:
 - **`on`** — o **gatilho**: o que faz a pipeline rodar. Aqui, todo `push` nas branches `main`, em qualquer `task/**` e em qualquer `feat/**`, e todo `pull_request`. O `**` é um curinga que casa com qualquer nome depois da barra.
 - **`jobs`** — a lista de **trabalhos**. Uma pipeline tem um ou mais jobs, que rodam em paralelo por padrão. Aqui há um só, chamado `testes`.
 - **`runs-on`** — em que **máquina** o job roda. `ubuntu-latest` é uma máquina Linux limpa que o GitHub cria do zero para esta execução e destrói no fim. Nada da sua máquina vai junto — é essa neutralidade que dá valor ao resultado.
-- **`steps`** — a **sequência de passos** do job, executados de cima para baixo. Cada passo é uma ação ou um comando.
+- **`steps`** — a **sequência de passos** do job, executados de cima para baixo. Cada passo é uma ação pronta ou um comando.
 - **`uses`** — usa uma **ação pronta**, publicada por outra pessoa. `actions/checkout@v4` baixa o seu código para a máquina; `actions/setup-java@v4` instala o Java; `actions/upload-artifact@v4` guarda arquivos. O `@v4` fixa a versão da ação.
-- **`with`** — os **parâmetros** que aquela ação recebe (a distribuição do Java, a versão, etc.).
+- **`with`** — os **parâmetros** que aquela ação recebe (a distribuição do Java, a versão, o cache).
 - **`run`** — executa um **comando de terminal** direto na máquina. Aqui, `mvn test`.
 
 > **YAML é sensível a indentação.** O que está aninhado dentro do quê é definido **só pelos espaços** no começo da linha. Errar a indentação muda o significado do arquivo ou o quebra. E há uma regra rígida: **YAML não aceita tabulação para indentar** — só espaços. Se o seu editor insere `Tab`, configure-o para usar espaços, ou a pipeline nem começa.
 
 ---
 
-## 3. Por que o cache e o `always()` importam
+## 4. Por que o cache e o `always()` importam
 
 Dois detalhes pequenos no arquivo carregam muito peso.
 
@@ -87,7 +87,7 @@ Na ação `setup-java`, a linha `cache: maven` guarda as dependências baixadas 
 
 ### `if: always()`
 
-Por padrão, quando um passo **falha**, o GitHub **pula todos os passos seguintes** — a lógica é "se a compilação quebrou, não adianta continuar".
+Por padrão, quando um passo **falha**, o GitHub **pula todos os passos seguintes** — a lógica é "se algo quebrou, não adianta continuar".
 
 Mas aqui o passo `mvn test` **vai falhar de propósito** (os defeitos plantados fazem a suíte terminar com erro). Sem nenhuma proteção, o passo seguinte — o que publica os relatórios de teste — seria pulado. E é justamente quando os testes falham que você **mais** quer o relatório para investigar.
 
@@ -97,12 +97,34 @@ O `if: always()` força aquele passo a rodar **sempre**, mesmo depois de uma fal
 
 ---
 
-## 4. O resultado real
+## 5. O resultado real
 
-Saída real do passo `Rodar os testes` na execução do GitHub Actions:
+Saída real do passo `Rodar os testes`, copiada do log da execução no GitHub Actions (as linhas de rastreamento de pilha `at ...` foram omitidas para encurtar):
 
 ```text
-<!-- SAIDA_REAL_ACTIONS -->
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running br.ulbra.bibliotech.regras.CalculadoraMultaTest
+[ERROR] Tests run: 15, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.371 s <<< FAILURE! -- in br.ulbra.bibliotech.regras.CalculadoraMultaTest
+[ERROR] CalculadoraMultaTest.fronteirasDaMultaGeramValorEsperado(long, double)[5] <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <3.0> but was: <0.0>
+[ERROR] CalculadoraMultaTest.fronteirasDaMultaGeramValorEsperado(long, double)[9] <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <50.0> but was: <51.0>
+[ERROR] CalculadoraMultaTest.atrasoMuitoLongoRespeitaOTeto <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <50.0> but was: <365.0>
+
+[INFO] Results:
+[ERROR] Failures:
+[ERROR]   CalculadoraMultaTest.atrasoMuitoLongoRespeitaOTeto:86 expected: <50.0> but was: <365.0>
+[ERROR]   CalculadoraMultaTest.fronteirasDaMultaGeramValorEsperado:111 expected: <3.0> but was: <0.0>
+[ERROR]   CalculadoraMultaTest.fronteirasDaMultaGeramValorEsperado:111 expected: <50.0> but was: <51.0>
+[ERROR] Tests run: 15, Failures: 3, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project bibliotech: There are test failures.
+##[error]Process completed with exit code 1.
 ```
 
 Repare na última linha: o processo terminou com **`exit code 1`**.
@@ -111,7 +133,7 @@ Repare na última linha: o processo terminou com **`exit code 1`**.
 
 ---
 
-## 5. Por que a pipeline vermelha está certa
+## 6. Por que a pipeline vermelha está certa
 
 O sistema tem defeitos plantados. A suíte de testes os denuncia, falhando nos valores de fronteira. O `mvn test` termina com código 1. A pipeline vê o 1 e marca a execução como falha.
 
@@ -121,7 +143,7 @@ Uma pipeline verde neste projeto seria a notícia ruim: significaria que ela **n
 
 ---
 
-## 6. O erro de tentar deixar a pipeline verde
+## 7. O erro de tentar deixar a pipeline verde
 
 Existe uma flag do Maven que faz a pipeline passar mesmo com teste falhando:
 
@@ -139,7 +161,7 @@ Por isso o passo de teste deste workflow é `mvn test`, puro, sem nenhuma flag q
 
 ---
 
-## 7. Uma limitação desta pipeline
+## 8. Uma limitação desta pipeline
 
 Este workflow roda **apenas testes unitários** — os da branch de onde ele parte, que rodam sozinhos, sem depender de nada externo.
 
@@ -149,21 +171,9 @@ Isso é perfeitamente possível — muitos projetos fazem —, mas exige montar 
 
 ---
 
-## 8. Como acompanhar a execução
+## 9. Como acompanhar a execução
 
 1. No repositório, no GitHub, clique na aba **Actions** (no topo, entre "Pull requests" e "Projects").
 2. A lista mostra todas as execuções, a mais recente no topo. Um ✓ verde indica sucesso; um ✗ vermelho, falha. Clique numa execução para abri-la.
 3. Dentro da execução, clique no job **testes** para ver os passos. Cada passo pode ser expandido para mostrar o log completo daquele passo — é onde você lê a saída do `mvn test`.
 4. Para baixar os relatórios: na página da execução, role até o fim, até a seção **Artifacts**, e clique em **surefire-reports** para baixar o `.zip` com os relatórios detalhados de cada teste. Graças ao `if: always()`, esse artefato está lá **mesmo com a execução vermelha**.
-
----
-
-## 9. Como rodar localmente
-
-Antes de enviar, você pode rodar a mesma coisa que a pipeline roda:
-
-```bash
-mvn test
-```
-
-O resultado (as mesmas falhas) aparece no seu terminal. A diferença é que a pipeline roda isso numa máquina limpa, a cada push, para todo mundo — sem depender de você lembrar de rodar.
